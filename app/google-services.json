@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "245633482012",
+    "firebase_url": "https://mojaaplikacija-c9db9.firebaseio.com",
+    "project_id": "mojaaplikacija-c9db9",
+    "storage_bucket": "mojaaplikacija-c9db9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245633482012:android:7ce9157c0ef30333",
+        "android_client_info": {
+          "package_name": "com.example.zorz.mojaaplikacija"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245633482012-mqblb06j0o5e65cd7mn9ocp5jnlqr5qv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zorz.mojaaplikacija",
+            "certificate_hash": "d316dc875c9ec8da00b4cec5e8a20ee6f8696f2b"
+          }
+        },
+        {
+          "client_id": "245633482012-pqm1o8amp4iuv3lpvsvo4hosk7tic22b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzxRFO0o5Tmc96DbLGp_leIxFWAo2N9IE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245633482012-pqm1o8amp4iuv3lpvsvo4hosk7tic22b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
