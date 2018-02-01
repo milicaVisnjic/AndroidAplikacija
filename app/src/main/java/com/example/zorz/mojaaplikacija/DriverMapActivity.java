@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -95,6 +96,16 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerDeliveryLocation();
                 }
+                else {
+                    customerId = "";
+                    if(deliveryMarker != null) {
+                        deliveryMarker.remove();
+                    }
+                    if(assignedCustomerDeliveryLocationRefListener != null) {
+                        assignedCustomerDeliveryLocationRef.removeEventListener(assignedCustomerDeliveryLocationRefListener);
+                    }
+
+                }
             }
 
             @Override
@@ -104,12 +115,15 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         });
     }
 
+    Marker deliveryMarker;
+    private DatabaseReference assignedCustomerDeliveryLocationRef;
+    private ValueEventListener assignedCustomerDeliveryLocationRefListener;
     private void getAssignedCustomerDeliveryLocation(){
-        DatabaseReference assignedCustomerDeliveryLocationRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("l");
-        assignedCustomerDeliveryLocationRef.addValueEventListener(new ValueEventListener() {
+        assignedCustomerDeliveryLocationRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("l");
+        assignedCustomerDeliveryLocationRefListener = assignedCustomerDeliveryLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if(dataSnapshot.exists() && !customerId.equals("")) {
                     List<Object> map = (List<Object>) dataSnapshot.getValue();
                     double locationLat = 0;
                     double locationLng = 0;
@@ -120,7 +134,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                         locationLng = Double.parseDouble(map.get(1).toString());
                     }
                     LatLng driverLatLng = new LatLng(locationLat, locationLng);
-                    mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Delivery location"));
+                    deliveryMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Delivery location"));
                 }
             }
 

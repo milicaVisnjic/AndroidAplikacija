@@ -50,6 +50,9 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private Button mLogout, mRequest;
 
     private LatLng deliveryLocation;
+    private Boolean requestBol = false;
+
+    private Marker deliveryMarker;
 
 
     @Override
@@ -84,18 +87,47 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                if(requestBol){
+                    requestBol = false;
+                    geoQuery.removeAllListeners();
+                    driverLocationRef.removeEventListener(driverLocationRefListener);
 
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
-                GeoFire geoFire = new GeoFire(ref);
-                geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+                    if(driverFoundID != null) {
+                        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundID);
+                        driverRef.setValue(true);
+                        driverFoundID = null;
+                    }
+                    driverFound = false;
+                    radius = 1;
 
-                deliveryLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(deliveryLocation).title("Delivery Here"));
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                mRequest.setText("Getting your driver...");
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
+                    GeoFire geoFire = new GeoFire(ref);
+                    geoFire.removeLocation(userId);
 
-                getClosestDriver();
+                    if(deliveryMarker != null) {
+                        deliveryMarker.remove();
+                    }
+                    mRequest.setText("Call Driver");
+                }
+                else {
+                    requestBol = true;
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("customerRequest");
+                    GeoFire geoFire = new GeoFire(ref);
+                    geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+
+                    deliveryLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    deliveryMarker = mMap.addMarker(new MarkerOptions().position(deliveryLocation).title("Delivery Here"));
+
+                    mRequest.setText("Getting your driver...");
+
+                    getClosestDriver();
+
+                }
+
             }
         });
     }
@@ -103,17 +135,18 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private int radius = 1;
     private Boolean driverFound = false;
     private String driverFoundID;
+    GeoQuery geoQuery;
     private void getClosestDriver() {
         DatabaseReference driverLocation = FirebaseDatabase.getInstance().getReference().child("driversAvailable");
 
         GeoFire geoFire = new GeoFire(driverLocation);
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(deliveryLocation.latitude, deliveryLocation.longitude), radius);
+        geoQuery = geoFire.queryAtLocation(new GeoLocation(deliveryLocation.latitude, deliveryLocation.longitude), radius);
         geoQuery.removeAllListeners();
 
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
-                if(!driverFound) {
+                if(!driverFound && requestBol) {
                     driverFound = true;
                     driverFoundID = key;
 
@@ -155,12 +188,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     }
 
     private Marker mDriverMarker;
+    private DatabaseReference driverLocationRef;
+    private ValueEventListener driverLocationRefListener;
     private void getDriverLocation() {
-        DatabaseReference driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driversWorking").child(driverFoundID).child("l");
-        driverLocationRef.addValueEventListener(new ValueEventListener() {
+        driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driversWorking").child(driverFoundID).child("l");
+        driverLocationRefListener = driverLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
+                if(dataSnapshot.exists() && requestBol) {
                     List<Object> map = (List<Object>) dataSnapshot.getValue();
                     double locationLat = 0;
                     double locationLng = 0;
@@ -185,7 +220,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
                     float distance = loc1.distanceTo(loc2);
 
-                    mRequest.setText("Your driver is " +String.valueOf(distance) + "m away from you");
+
+                    if(distance<50) {
+                        mRequest.setText("Your driver is here" +String.valueOf(distance) + "m away from you");
+                    }
+                    else {
+                        mRequest.setText("Your driver is " +String.valueOf(distance) + "m away from you");
+                    }
+
                     mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Your driver is here"));
                 }
             }
