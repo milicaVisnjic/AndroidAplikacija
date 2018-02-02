@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -222,13 +223,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
 
                     if(distance<50) {
-                        mRequest.setText("Your driver is here" +String.valueOf(distance) + "m away from you");
+                        mRequest.setText("Your driver is here");
                     }
                     else {
                         mRequest.setText("Your driver is " +String.valueOf(distance) + "m away from you");
                     }
 
-                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Your driver is here"));
+                    mDriverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Your driver is here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_car)));
                 }
             }
 
