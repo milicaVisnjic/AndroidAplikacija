@@ -110,6 +110,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
                     if(deliveryMarker != null) {
                         deliveryMarker.remove();
+                        deliveryMarker.setVisible(false);
                     }
                     mRequest.setText("Call Driver");
                 }
