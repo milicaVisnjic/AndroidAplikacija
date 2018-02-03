@@ -37,19 +37,20 @@ import java.util.Map;
 
 import static android.provider.MediaStore.*;
 
-public class CustomerSettingsActivity extends AppCompatActivity {
+public class DriverSettingsActivity extends AppCompatActivity {
 
-    private EditText mNameField, mPhoneField;
+    private EditText mNameField, mPhoneField, mCarField;
 
     private Button mBack, mConfirm;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mCustomerDatabase;
+    private DatabaseReference mDriverDatabase;
 
     private String userID;
     private String mName;
     private String mPhone;
     private String mProfileImageUrl;
+    private String mCar;
 
     private ImageView mProfileImage;
 
@@ -58,10 +59,11 @@ public class CustomerSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_settings);
+        setContentView(R.layout.activity_driver_settings);
 
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
+        mCarField = (EditText) findViewById(R.id.car);
 
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
 
@@ -70,7 +72,7 @@ public class CustomerSettingsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         userID = mAuth.getCurrentUser().getUid();
-        mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(userID);
+        mDriverDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userID);
 
         getUserInfo();
 
@@ -88,7 +90,11 @@ public class CustomerSettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 try {
                     saveUserInformation();
-                    Toast.makeText(CustomerSettingsActivity.this, "Successfully added/updated information!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverSettingsActivity.this, "Successfully added/updated information!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DriverSettingsActivity.this, DriverMapActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -98,6 +104,8 @@ public class CustomerSettingsActivity extends AppCompatActivity {
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(DriverSettingsActivity.this, DriverMapActivity.class);
+                startActivity(intent);
                 finish();
                 return;
             }
@@ -105,7 +113,7 @@ public class CustomerSettingsActivity extends AppCompatActivity {
     }
 
     private void getUserInfo() {
-        mCustomerDatabase.addValueEventListener(new ValueEventListener() {
+        mDriverDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) { //ako su unete informacije od strane korisnika
@@ -117,6 +125,10 @@ public class CustomerSettingsActivity extends AppCompatActivity {
                     if(map.get("phone") != null){
                         mPhone = map.get("phone").toString();
                         mPhoneField.setText(mPhone);
+                    }
+                    if(map.get("car") != null){
+                        mCar = map.get("car").toString();
+                        mCarField.setText(mCar);
                     }
                     if(map.get("profileImageUrl") != null) {
                         mProfileImageUrl = map.get("profileImageUrl").toString();
@@ -135,11 +147,13 @@ public class CustomerSettingsActivity extends AppCompatActivity {
     private void saveUserInformation() throws IOException {
         mName = mNameField.getText().toString();
         mPhone = mPhoneField.getText().toString();
+        mCar = mCarField.getText().toString();
 
         Map userInfo = new HashMap();
         userInfo.put("name", mName);
         userInfo.put("phone", mPhone);
-        mCustomerDatabase.updateChildren(userInfo);
+        userInfo.put("car", mCar);
+        mDriverDatabase.updateChildren(userInfo);
 
         if(resultUri != null) { //ako je korisnik izabrao sliku
             StorageReference filePath = FirebaseStorage.getInstance().getReference().child("profile_images").child(userID);
@@ -167,7 +181,7 @@ public class CustomerSettingsActivity extends AppCompatActivity {
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     Map newImage = new HashMap();
                     newImage.put("profileImageUrl", downloadUrl.toString());
-                    mCustomerDatabase.updateChildren(newImage);
+                    mDriverDatabase.updateChildren(newImage);
 
                     finish();
                     return;

@@ -15,7 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="password"
-        android:id="@+id/password"/>
+        android:id="@+id/password"
+        android:inputType="textPassword"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,4 +27,9 @@
         android:layout_height="wrap_content"
         android:text="registration"
         android:id="@+id/registration"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="back"
+        android:id="@+id/back"/>
 </LinearLayout>

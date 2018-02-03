@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class DriverLoginActivity extends AppCompatActivity {
     private EditText mEmail, mPassword;
-    private Button mLogin, mRegistration;
+    private Button mLogin, mRegistration, mBack;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
@@ -50,6 +50,7 @@ public class DriverLoginActivity extends AppCompatActivity {
 
         mLogin = (Button) findViewById(R.id.login);
         mRegistration = (Button) findViewById(R.id.registration);
+        mBack = (Button) findViewById(R.id.back);
 
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,8 +65,8 @@ public class DriverLoginActivity extends AppCompatActivity {
                         }
                         else {
                             String user_id = mAuth.getCurrentUser().getUid();
-                            DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id);
-                            current_user_db.setValue(true);
+                            DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id).child("email");
+                            current_user_db.setValue("email");
                         }
                     }
                 });
@@ -84,6 +85,15 @@ public class DriverLoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+            }
+        });
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DriverLoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                return;
             }
         });
     }

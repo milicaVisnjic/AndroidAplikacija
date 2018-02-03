@@ -23,11 +23,57 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
     <Button
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="call driver"
         android:id="@+id/request"/>
+    <LinearLayout
+        android:layout_above="@+id/request"
+        android:id="@+id/driverInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="45sp"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        >
+        <ImageView
+            android:layout_width="100sp"
+            android:layout_height="100sp"
+            android:id="@+id/driverProfileImage"
+            android:src="@mipmap/ic_user"
+            android:padding="10sp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="20sp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/driverName"
+                android:paddingBottom="5sp"
+                android:paddingTop="5sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/driverPhone"
+                android:paddingBottom="5sp"
+                android:paddingTop="5sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/driverCar"
+                android:paddingBottom="5sp"
+                android:paddingTop="5sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
 
 </FrameLayout>
