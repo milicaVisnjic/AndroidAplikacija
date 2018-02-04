@@ -2,8 +2,10 @@ package com.example.zorz.mojaaplikacija;
 
 import android.*;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.support.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,7 +44,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalPayment;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmation;
 
+import org.json.JSONException;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,14 +74,52 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private ImageView mDriverProfileImage;
     private TextView mDriverName, mDriverPhone, mDriverCar;
 
+    Button mPay;
+    EditText edtAmount;
+    String amount="";
+
+    private static final int PAYPAL_REQUEST_CODE = 7171;
+
+    private static PayPalConfiguration config = new PayPalConfiguration()
+            .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+            .clientId(PayPalConfig.PAYPAL_CLIENT_ID);
+
+
+
+
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this, PayPalService.class));
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        //Start Paypal Service
+        Intent intent = new Intent(this, PayPalService.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        startService(intent);
+
+
+
+        edtAmount = (EditText) findViewById(R.id.amount);
+
+/*
+        Intent intent = new Intent(this, PayPalService.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        startService(intent);
+*/
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+
+
+
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(CustomerMapActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
@@ -89,6 +138,15 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mLogout = (Button) findViewById(R.id.logout);
         mRequest = (Button) findViewById(R.id.request);
         mSettings = (Button) findViewById(R.id.settings);
+        mPay = (Button) findViewById(R.id.pay);
+
+        mPay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                processPayment();
+            }
+        });
+
 
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,6 +223,41 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 return;
             }
         });
+    }
+
+    private void processPayment(){
+        amount = edtAmount.getText().toString();
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "EUR", "Delivery cost", PayPalPayment.PAYMENT_INTENT_SALE);
+        Intent intent = new Intent(this, PaymentActivity.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
+        startActivityForResult(intent, PAYPAL_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PAYPAL_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                PaymentConfirmation confirmation = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                if (confirmation != null) {
+                    try {
+                        String paymentDetails = confirmation.toJSONObject().toString(4);
+                        startActivity(new Intent(this, PaymentDetails.class)
+                                .putExtra("PaymentDetails", paymentDetails)
+                                .putExtra("PaymentAmount", amount)
+                        );
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } else if (resultCode == Activity.RESULT_CANCELED)
+                Toast.makeText(this, "Calcel", Toast.LENGTH_SHORT).show();
+
+        } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID)
+            Toast.makeText(this, "Invalid", Toast.LENGTH_SHORT).show();
+
     }
 
     private int radius = 1;
@@ -377,8 +470,40 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             }
         }
     }
+/*
+    private int PAYPAL_REQUEST_CODE = 1;
+    private static PayPalConfiguration config = new PayPalConfiguration()
+            .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+            .clientId(PayPalConfig.PAYPAL_CLIENT_ID);
+    private void payPalPayment(){
+        PayPalPayment payment = new PayPalPayment(new BigDecimal(10), "EUR", "",
+                PayPalPayment.PAYMENT_INTENT_SALE);
+        Intent intent = new Intent(this, PaymentActivity.class); //PaymentActivity je kreiran u PayPal API-ju
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payment);
 
+        startActivityForResult(intent, PAYPAL_REQUEST_CODE); //dobijamo rezultat prethodnog intent-a, tj da li je placanje uspesno ili ne
+    }
+    */
 
+  /*  @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PAYPAL_REQUEST_CODE) { //ako je paypal activity otvoren
+            if(resultCode == Activity.RESULT_OK) { //ako user nije zatvorio taj activity, onda mozemo dobiti informaciju
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Payment unsuccessfull", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        startService(new Intent(this, PayPalService.class));
+        super.onDestroy();
+    }
+*/
     @Override
     protected void onStop() {
         super.onStop();

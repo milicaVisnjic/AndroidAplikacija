@@ -124,7 +124,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private void getAssignedCustomer() {
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRideId");
+        final DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRideId");
         assignedCustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -143,10 +143,13 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     if(assignedCustomerDeliveryLocationRefListener != null) {
                         assignedCustomerDeliveryLocationRef.removeEventListener(assignedCustomerDeliveryLocationRefListener);
                     }
+                    mCustomerInfo.removeAllViews(); ///????????????
                     mCustomerInfo.setVisibility(View.GONE);
                     mCustomerName.setText("");
                     mCustomerPhone.setText("");
                     mCustomerProfileImage.setImageResource(R.mipmap.ic_user);
+                    assignedCustomerRef.removeValue();
+
                 }
             }
 
@@ -269,7 +272,6 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     geoFireWorking.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
                     break;
             }
-
         }
     }
 

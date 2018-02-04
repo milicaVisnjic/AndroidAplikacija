@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.zorz.mojaaplikacija.PaymentDetails">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="20sp"
+            android:layout_marginLeft="20sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/details"
+            android:text="Payment details: "
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="25sp"
+            android:layout_marginLeft="20sp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtId"
+            android:textStyle="italic"
+            android:text="Payment ID: "/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="20sp"
+            android:id="@+id/txtAmount"
+            android:textStyle="italic"
+            android:text="Payment amount: "/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
+            android:layout_marginLeft="20sp"
+            android:id="@+id/txtStatus"
+            android:textStyle="italic"
+            android:text="Payment status: "/>
+
+
+
+
+
+    </LinearLayout>
+</RelativeLayout>
