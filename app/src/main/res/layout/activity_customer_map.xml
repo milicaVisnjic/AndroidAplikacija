@@ -20,15 +20,7 @@
         android:id="@+id/logout"
         android:text="logout"/>
 
-    <Button
-        android:layout_gravity="right"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginLeft="175sp"
-        android:text="pay"
-        android:layout_marginTop="50sp"
-        android:id="@+id/pay"
-        />
+
 
     <fragment
         android:id="@+id/map"
@@ -65,34 +57,47 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="20sp">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/driverName"
-                android:paddingBottom="5sp"
-                android:paddingTop="5sp"/>
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="5sp"
+                android:paddingTop="5sp" />
+
+            <TextView
                 android:id="@+id/driverPhone"
-                android:paddingBottom="5sp"
-                android:paddingTop="5sp"/>
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/driverCar"
                 android:paddingBottom="5sp"
-                android:paddingTop="5sp"/>
+                android:paddingTop="5sp" />
+
+            <TextView
+                android:id="@+id/driverCar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5sp"
+                android:paddingTop="5sp" />
+
+            <EditText
+                android:id="@+id/amount"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="165sp"
+                android:hint="Enter amount"
+                android:textScaleX="0.8" />
+
+            <Button
+                android:id="@+id/pay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="175sp"
+                android:text="pay" />
 
         </LinearLayout>
     </LinearLayout>
-    <EditText
-        android:id="@+id/amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:hint="Enter amount"
-        android:textScaleX="0.8"/>
+
 
 
 
