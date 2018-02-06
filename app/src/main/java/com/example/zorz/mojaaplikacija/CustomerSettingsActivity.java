@@ -91,10 +91,13 @@ public class CustomerSettingsActivity extends AppCompatActivity {
                 try {
                     saveUserInformation();
                     Toast.makeText(CustomerSettingsActivity.this, "Successfully added/updated information!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CustomerSettingsActivity.this, CustomerMapActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             }
         });
         mBack.setOnClickListener(new View.OnClickListener() {

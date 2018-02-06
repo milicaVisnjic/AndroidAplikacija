@@ -143,7 +143,6 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     if(assignedCustomerDeliveryLocationRefListener != null) {
                         assignedCustomerDeliveryLocationRef.removeEventListener(assignedCustomerDeliveryLocationRefListener);
                     }
-                    mCustomerInfo.removeAllViews(); ///????????????
                     mCustomerInfo.setVisibility(View.GONE);
                     mCustomerName.setText("");
                     mCustomerPhone.setText("");
@@ -335,7 +334,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     }
 
     private List<Polyline> polylines;
-    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+    private static final int[] COLORS = new int[]{R.color.colorPrimaryDark};
 
     @Override
     public void onRoutingFailure(RouteException e) {
