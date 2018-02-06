@@ -17,8 +17,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class DriverLoginActivity extends AppCompatActivity {
-    private EditText mEmail, mPassword;
+public class DriverRegistrationActivity extends AppCompatActivity {
+    private EditText mEmail, mPassword, mPasswordConfirm;
     private Button mLogin, mRegistration, mBack;
 
     private FirebaseAuth mAuth;
@@ -27,7 +27,7 @@ public class DriverLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_driver_login);
+        setContentView(R.layout.activity_driver_registration);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -36,7 +36,7 @@ public class DriverLoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user!=null) {
-                    Intent intent = new Intent(DriverLoginActivity.this, DriverMapActivity.class);
+                    Intent intent = new Intent(DriverRegistrationActivity.this, DriverMapActivity.class);
                     startActivity(intent);
                     finish();
                     return;
@@ -47,56 +47,64 @@ public class DriverLoginActivity extends AppCompatActivity {
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
+        mPasswordConfirm = (EditText) findViewById(R.id.passconfirm);
 
         mLogin = (Button) findViewById(R.id.login);
         mRegistration = (Button) findViewById(R.id.registration);
         mBack = (Button) findViewById(R.id.back);
 
+
         mRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DriverLoginActivity.this, DriverRegistrationActivity.class);
-                startActivity(intent);
-                finish();
-                return;
-            }
-        });
-
-        mLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
+                final String passconfirm = mPasswordConfirm.getText().toString();
                 if (email.isEmpty()) {
-                    Toast.makeText(DriverLoginActivity.this, "You must enter your email address.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverRegistrationActivity.this, "You must enter your email address.", Toast.LENGTH_SHORT).show();
                     mEmail.requestFocus();
                 } else if (password.isEmpty()) {
-                    Toast.makeText(DriverLoginActivity.this, "You must enter your password.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverRegistrationActivity.this, "You must enter your password.", Toast.LENGTH_SHORT).show();
                     mPassword.requestFocus();
-                } else {
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                }
+                else if (passconfirm.isEmpty()) {
+                    Toast.makeText(DriverRegistrationActivity.this, "You need to confirm your password.", Toast.LENGTH_SHORT).show();
+
+                }
+                else if (!password.equals(passconfirm)) {
+                    Toast.makeText(DriverRegistrationActivity.this, "Your passwords don't match.", Toast.LENGTH_SHORT).show();
+                }else {
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverRegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+
+
                             if (!task.isSuccessful()) {
-                                Toast.makeText(DriverLoginActivity.this, "sign in error", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(DriverRegistrationActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                String user_id = mAuth.getCurrentUser().getUid();
+                                DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id).child("name");
+                                current_user_db.setValue(email);
                             }
                         }
+
                     });
                 }
             }
         });
 
 
-                mBack.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(DriverLoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                        return;
-                    }
-                });
-        }
+
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DriverRegistrationActivity.this, DriverLoginActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            }
+        });
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -104,8 +112,8 @@ public class DriverLoginActivity extends AppCompatActivity {
     }
     @Override
     protected void onStop() {
-    super.onStop();
-    mAuth.removeAuthStateListener(firebaseAuthListener);
+        super.onStop();
+        mAuth.removeAuthStateListener(firebaseAuthListener);
 
     }
 }

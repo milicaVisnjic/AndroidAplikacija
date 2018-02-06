@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.zorz.mojaaplikacija.DriverLoginActivity"
+    tools:context="com.example.zorz.mojaaplikacija.DriverRegistrationActivity"
     android:orientation="vertical">
     <EditText
         android:layout_width="match_parent"
@@ -17,12 +17,12 @@
         android:hint="password"
         android:id="@+id/password"
         android:inputType="textPassword"/>
-
-    <Button
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="login"
-        android:id="@+id/login"/>
+        android:hint="confirm password"
+        android:id="@+id/passconfirm"
+        android:inputType="textPassword"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

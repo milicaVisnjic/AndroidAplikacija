@@ -31,7 +31,7 @@
         android:layout_gravity="bottom"
         android:background="@android:color/white"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/customerProfileImage"
@@ -59,9 +59,19 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="5sp"
                 android:paddingTop="10sp" />
-
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ratingBar"
+                android:paddingTop="80"
+                android:layout_gravity="left"
+                android:numStars="5"
+                android:stepSize="1"
+                >
+            </RatingBar>
 
         </LinearLayout>
+
     </LinearLayout>
 
 </FrameLayout>
