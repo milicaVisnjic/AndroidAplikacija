@@ -78,24 +78,33 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="5sp"
                 android:paddingTop="5sp" />
-
-            <EditText
-                android:id="@+id/amount"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="165sp"
-                android:hint="Enter amount"
-                android:textScaleX="0.8" />
-
-            <Button
-                android:id="@+id/pay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginLeft="175sp"
-                android:text="pay" />
-
         </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/driverPay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="170sp"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        >
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="161sp"
+            android:hint="Enter amount"
+            android:textScaleX="0.9" />
+
+        <Button
+            android:id="@+id/pay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginLeft="30sp"
+            android:text="pay" />
     </LinearLayout>
 
 

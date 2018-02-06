@@ -44,9 +44,28 @@
             android:textStyle="italic"
             android:text="Payment status: "/>
 
-
-
-
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingBar"
+            android:paddingTop="80sp"
+            android:layout_gravity="center"
+            android:numStars="5"
+            android:stepSize="1">
+        </RatingBar>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:id="@+id/submit"
+            android:text="submit"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/txtRating"
+            android:textStyle="italic"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </RelativeLayout>

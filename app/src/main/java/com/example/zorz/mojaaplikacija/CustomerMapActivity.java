@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,13 +71,15 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private Boolean requestBol = false;
 
     private Marker deliveryMarker;
-    private LinearLayout mDriverInfo;
+    private LinearLayout mDriverInfo, mDriverPay;
     private ImageView mDriverProfileImage;
     private TextView mDriverName, mDriverPhone, mDriverCar;
+
 
     Button mPay;
     EditText edtAmount;
     String amount="";
+
 
     private static final int PAYPAL_REQUEST_CODE = 7171;
 
@@ -129,6 +132,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         }
 
         mDriverInfo = (LinearLayout) findViewById(R.id.driverInfo);
+        mDriverPay = (LinearLayout) findViewById(R.id.driverPay);
         mDriverProfileImage = (ImageView) findViewById(R.id.driverProfileImage);
 
         mDriverName = (TextView) findViewById(R.id.driverName);
@@ -139,6 +143,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         mRequest = (Button) findViewById(R.id.request);
         mSettings = (Button) findViewById(R.id.settings);
         mPay = (Button) findViewById(R.id.pay);
+
 
         mPay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +196,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     mRequest.setText("Call driver");
 
                     mDriverInfo.setVisibility(View.GONE);
+                    mDriverPay.setVisibility(View.GONE);
                     mDriverName.setText("");
                     mDriverPhone.setText("");
                     mDriverCar.setText("");
@@ -228,11 +234,21 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private void processPayment(){
         amount = edtAmount.getText().toString();
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "EUR", "Delivery cost", PayPalPayment.PAYMENT_INTENT_SALE);
-        Intent intent = new Intent(this, PaymentActivity.class);
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
-        startActivityForResult(intent, PAYPAL_REQUEST_CODE);
+        if(amount.isEmpty())
+        {
+            Toast.makeText(CustomerMapActivity.this, "You need to enter the amount in order to pay.", Toast.LENGTH_SHORT).show();
+        }
+        else if (amount.matches(".*[a-z].*"))
+        {
+            Toast.makeText(CustomerMapActivity.this, "You need to enter number in order to pay.", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "EUR", "Delivery cost", PayPalPayment.PAYMENT_INTENT_SALE);
+            Intent intent = new Intent(this, PaymentActivity.class);
+            intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+            intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
+            startActivityForResult(intent, PAYPAL_REQUEST_CODE);
+        }
     }
 
     @Override
@@ -372,6 +388,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private void getDriverInfo() {
         mDriverInfo.setVisibility(View.VISIBLE);
+        mDriverPay.setVisibility(View.VISIBLE);
         DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundID);
         mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
