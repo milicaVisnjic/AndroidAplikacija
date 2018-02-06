@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class DriverLoginActivity extends AppCompatActivity {
-    private EditText mEmail, mPassword;
+    private EditText mEmail, mPassword, mPasswordConfirm;
     private Button mLogin, mRegistration, mBack;
 
     private FirebaseAuth mAuth;
@@ -47,6 +47,7 @@ public class DriverLoginActivity extends AppCompatActivity {
 
         mEmail = (EditText) findViewById(R.id.email);
         mPassword = (EditText) findViewById(R.id.password);
+        mPasswordConfirm = (EditText) findViewById(R.id.passconfirm);
 
         mLogin = (Button) findViewById(R.id.login);
         mRegistration = (Button) findViewById(R.id.registration);
@@ -57,46 +58,74 @@ public class DriverLoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()) {
-                            Toast.makeText(DriverLoginActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
+                final String passconfirm = mPasswordConfirm.getText().toString();
+                if (email.isEmpty()) {
+                    Toast.makeText(DriverLoginActivity.this, "You must enter your email address.", Toast.LENGTH_SHORT).show();
+                    mEmail.requestFocus();
+                } else if (password.isEmpty()) {
+                    Toast.makeText(DriverLoginActivity.this, "You must enter your password.", Toast.LENGTH_SHORT).show();
+                    mPassword.requestFocus();
+                }
+                else if (passconfirm.isEmpty()) {
+                    Toast.makeText(DriverLoginActivity.this, "You need to confirm your password.", Toast.LENGTH_SHORT).show();
+
+                }
+                else if (!password.equals(passconfirm)) {
+                    Toast.makeText(DriverLoginActivity.this, "Your passwords don't match.", Toast.LENGTH_SHORT).show();
+                }else {
+                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+
+
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(DriverLoginActivity.this, "sign up error", Toast.LENGTH_SHORT).show();
+                            } else {
+                                String user_id = mAuth.getCurrentUser().getUid();
+                                DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id).child("email");
+                                current_user_db.setValue(email);
+                            }
                         }
-                        else {
-                            String user_id = mAuth.getCurrentUser().getUid();
-                            DatabaseReference current_user_db = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(user_id).child("email");
-                            current_user_db.setValue("email");
-                        }
-                    }
-                });
+
+                    });
+                }
             }
         });
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
-                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()) {
-                            Toast.makeText(DriverLoginActivity.this, "sign in error", Toast.LENGTH_SHORT).show();
+                if (email.isEmpty()) {
+                    Toast.makeText(DriverLoginActivity.this, "You must enter your email address.", Toast.LENGTH_SHORT).show();
+                    mEmail.requestFocus();
+                } else if (password.isEmpty()) {
+                    Toast.makeText(DriverLoginActivity.this, "You must enter your password.", Toast.LENGTH_SHORT).show();
+                    mPassword.requestFocus();
+                } else {
+                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()) {
+                                Toast.makeText(DriverLoginActivity.this, "sign in error", Toast.LENGTH_SHORT).show();
+                            }
                         }
+                    });
+                }
+            }
+        });
+
+
+                mBack.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(DriverLoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                        return;
                     }
                 });
-            }
-        });
-        mBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(DriverLoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                return;
-            }
-        });
-    }
+        }
     @Override
     protected void onStart() {
         super.onStart();
@@ -109,3 +138,4 @@ public class DriverLoginActivity extends AppCompatActivity {
 
     }
 }
+
